@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Create a smaller image for running the application
-FROM node:18 AS runner
+FROM node:18-alpine AS runner
 
 # Set the working directory in the container
 WORKDIR /app
