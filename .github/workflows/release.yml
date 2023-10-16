@@ -1,0 +1,35 @@
+name: Release Workflow
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+      - 'release'
+jobs:
+  audit:
+    name: Audit application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.x"  # Choose your preferred Node.js version
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Check for outdated dependencies
+        run: npm outdated
+
+      - name: Notify if outdated dependencies
+        run: |
+          if [ -n "$(npm outdated --parseable | tail -n +2)" ]; then
+            echo "Outdated dependencies found."
+            npm outdated
+            exit 1
+          else
+            echo "No outdated dependencies found."
+          fi
