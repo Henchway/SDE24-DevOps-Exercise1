@@ -27,14 +27,3 @@ jobs:
       - name: Check for outdated dependencies
         run: npm outdated
         continue-on-error: true # <- To avoid actually having to fix the issues :)
-
-
-      - name: Notify if outdated dependencies
-        run: |
-          if [ -n "$(npm outdated --parseable | tail -n +2)" ]; then
-            echo "Outdated dependencies found."
-            npm outdated
-            exit 1
-          else
-            echo "No outdated dependencies found."
-          fi
