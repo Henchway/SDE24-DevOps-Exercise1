@@ -1,65 +1,54 @@
 name: Development Workflow
 
-permissions:
-    contents: read
-    pages: write
-    id-token: write
-
 on:
-    push:
-        branches: [main] # is triggered if push event in development branch occurs
+  push:
+
 
 jobs:
-    test:
-        uses: ./.github/workflows/release.yml
-    build:
-        name: Build Application
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
+  lint:
+    name: Lint Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-            - name: Setup node
-              uses: actions/setup-node@v3
-              with:
-                  node-version: '18.x'
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Build project
-              run: npm run build
+      - name: Run linter
+        run: npm run lint
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-            - name: Fix permissions
-              run: |
-                  chmod -c -R +rX "_site/" | while read line; do
-                    echo "::warning title=Invalid file permissions automatically fixed::$line"
-                  done
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
 
-            - name: Upload artifacts
-              uses: actions/upload-pages-artifact@v2
-              with:
-                  name: pages-artifact
-                  path: ./dist
+      - name: Install dependencies
+        run: npm ci
 
-    deploy:
-        needs: [test, build]
-        name: Deploy Application
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
+      - name: Build project
+        run: npm run build
 
-            - name: Configure Pages
-              uses: actions/configure-pages@v3
+      - name: Fix permissions
+        run: |
+          chmod -c -R +rX "_site/" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
 
-            - name: Download Artifact
-              uses: actions/download-artifact@v3
-              with:
-                  name: pages-artifact
-                  path: './dist'
+      - name: Upload artifacts
+        uses: actions/upload-pages-artifact@v2
+        with:
+          name: pages-artifact
+          path: ./dist
 
-            - name: Deploy to GitHub Pages
-              uses: actions/deploy-pages@v2
-              with:
-                  artifact_name: pages-artifact
