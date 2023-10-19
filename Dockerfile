@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install project dependencies
-RUN npm install
+RUN npm install --omit=dev
 
 # Copy the source code into the container
 COPY . .
@@ -26,9 +26,7 @@ WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-
-# Install only production dependencies
-RUN npm install --omit=dev
+COPY --from=builder /app/node_modules ./node_modules
 
 # Expose the port your application listens on (replace with your actual port)
 EXPOSE 3000
