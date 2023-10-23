@@ -26,7 +26,7 @@ jobs:
         continue-on-error: true # <- To avoid actually having to fix the linting issues :)
 
   build:
-    name: Build Application (node)
+    name: Build Application (node) # Note: It's not specified what kind of build is expected, os here only Node build. Furthermore i'm not saving the artifacts as it's not specified as a requirement. Therefore this step only checks whether the project can be built at all.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -42,7 +42,7 @@ jobs:
 
       - name: Build project
         run: npm run build
-#  aws-dockerize:
+#  aws-dockerize: # I believe due to missing permissions the last step for the upload to ECR fails, it simply times out without specifying any particular error.
 #    name: Build Application (Docker AWS)
 #    runs-on: ubuntu-latest
 #    steps:
