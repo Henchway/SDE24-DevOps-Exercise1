@@ -1,0 +1,75 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: devopsex02
+  labels:
+    name: devopsex02
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devopsex02
+  labels:
+    app: devopsex02
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: devopsex02
+  template:
+    metadata:
+      labels:
+        app: devopsex02
+    spec:
+      containers:
+        - name: devopsex02
+          image: henchway/devopsexercise1:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 3000
+              name: blog-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: devopsex02
+  name: devopsex02-svc
+  namespace: devopsex02
+spec:
+  type: NodePort
+  ports:
+    - name: blog-svc-port
+      port: 3000
+      targetPort: 3000
+      nodePort: 30001
+  selector:
+    app: devopsex02
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: devopsex02
+  namespace: devopsex02
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: devopsex02
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageValue: 50m
