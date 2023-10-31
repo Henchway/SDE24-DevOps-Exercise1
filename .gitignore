@@ -34,3 +34,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .idea
+terraform/.terraform/providers/registry.terraform.io/hashicorp/aws
+terraform/terraform.tfstate.backup
